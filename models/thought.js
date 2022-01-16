@@ -1,0 +1,48 @@
+const { Schema, model } = require('mongoose');
+const userSchema = require('./User');
+
+// Nested document
+const reactionSchema = new mongoose.Schema({
+    reaction: { name: String, age: Number }
+  });
+
+// Schema to create User model
+const thoughtSchema = new Schema(
+  {
+    thoughtText: {
+        type: String,
+        required: true,
+        min_length: 1,
+        max_length: 280,
+    },
+    createdAt: {
+        type: Date, 
+        default: Date.now 
+    },
+    username:
+        {
+        type: String,
+        required: true,
+        },
+    reactions: [reactionSchema],
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
+);
+
+
+// Create a virtual property `reactionCount` that gets the number of reactions per thought
+thoughtSchema
+  .virtual('reactionCount')
+  // Getter
+  .get(function () {
+    return this.reactions.length;
+  });
+
+const Thought = model('user', thoughtSchema);
+
+module.exports = Thought;
