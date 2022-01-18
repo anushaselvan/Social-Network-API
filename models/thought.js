@@ -1,12 +1,7 @@
 const { Schema, model } = require('mongoose');
 const userSchema = require('./User');
 
-// Nested document
-const reactionSchema = new mongoose.Schema({
-    reaction: { name: String, age: Number }
-  });
-
-// Schema to create User model
+// Schema to create Thought model
 const thoughtSchema = new Schema(
   {
     thoughtText: {
