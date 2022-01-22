@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, Types } = require('mongoose');
 
 // Schema to create Reaction model
 const reactionSchema = new Schema(
@@ -7,7 +7,7 @@ const reactionSchema = new Schema(
         type: Schema.Types.ObjectId,
         default: () => new Types.ObjectId(),
     },
-    reactionBodyt: {
+    reactionBody: {
         type: String,
         required: true,
         max_length: 280,

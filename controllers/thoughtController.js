@@ -1,4 +1,4 @@
-const { Thought, Student } = require('../models');
+const { Thought, Reaction } = require('../models');
 
 module.exports = {
   // Get all Thoughts
@@ -7,24 +7,25 @@ module.exports = {
     .populate({
       path: "reactions",
       select: "'-__v",
+      model: Reaction,
   })
   .select("-__v")
-      .then((Thoughts) => res.json(Thoughts))
+      .then((ThoughtData) => res.json(ThoughtData))
       .catch((err) => res.status(500).json(err));
   },
   // Get a Thought
   getSingleThought(req, res) {
-    Thought.findOne({ _id: req.params.ThoughtId })
+    Thought.findOne({ _id: req.params.thoughtId })
       .select('-__v')
-      .then((Thought) =>
-        !Thought
+      .then((ThoughtData) =>
+        !ThoughtData
           ? res.status(404).json({ message: 'No Thought with that ID' })
-          : res.json(Thought)
+          : res.json(ThoughtData)
       )
       .catch((err) => res.status(500).json(err));
   },
   // Create a Thought
-  createThought(req, res) {
+ createThought(req, res) {
     Thought.create(req.body)
       .then((Thought) => res.json(Thought))
       .catch((err) => {
@@ -34,21 +35,21 @@ module.exports = {
   },
   // Delete a Thought
   deleteThought(req, res) {
-    Thought.findOneAndDelete({ _id: req.params.ThoughtId })
+    Thought.findOneAndDelete({ _id: req.params.thoughtId })
       .then((Thought) =>
         !Thought
           ? res.status(404).json({ message: 'No Thought with that ID' })
           : Student.deleteMany({ _id: { $in: Thought.students } })
       )
-      .then(() => res.json({ message: 'Thought and students deleted!' }))
+      .then(() => res.json({ message: 'Thought and reactions deleted!' }))
       .catch((err) => res.status(500).json(err));
   },
   // Update a Thought
   updateThought(req, res) {
     Thought.findOneAndUpdate(
-      { _id: req.params.ThoughtId },
+      { _id: req.params.thoughtId },
       { $set: req.body },
-      { runValidators: true, new: true }
+      { new: true }
     )
       .then((Thought) =>
         !Thought
@@ -62,7 +63,7 @@ addReaction(req, res) {
   console.log('You are adding an Friend');
   console.log(req.body);
   Thought.findOneAndUpdate(
-    { _id: req.params.ThoughtId },
+    { _id: req.params.thoughtId },
     { $addToSet: { reactions: req.body } },
     { runValidators: true, new: true }
   )
@@ -78,8 +79,8 @@ addReaction(req, res) {
 // Remove Reaction to a Thought
 removeReaction(req, res) {
   Thought.findOneAndUpdate(
-    { _id: req.params.ThoughtId },
-    { $pull: { ractions: { reactionId: req.params.reactionId } } },
+    { _id: req.params.thoughtId },
+    { $pull: { reactions: { reactionId: req.params.reactionId } } },
     { runValidators: true, new: true }
   )
     .then((Thought) =>
