@@ -1,22 +1,22 @@
-const { Thought, Reaction } = require('../models');
+const { Thought,User, Reaction } = require('../models');
 
 module.exports = {
   // Get all Thoughts
   getThoughts(req, res) {
     Thought.find({})
-    .populate({
+    /*.populate({
       path: "reactions",
-      select: "'-__v",
+      select: "-__v",
       model: Reaction,
   })
-  .select("-__v")
+  .select("-__v")*/
       .then((ThoughtData) => res.json(ThoughtData))
       .catch((err) => res.status(500).json(err));
   },
   // Get a Thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
-      .select('-__v')
+    //  .select('-__v')
       .then((ThoughtData) =>
         !ThoughtData
           ? res.status(404).json({ message: 'No Thought with that ID' })
@@ -27,8 +27,18 @@ module.exports = {
   // Create a Thought
  createThought(req, res) {
     Thought.create(req.body)
-      .then((Thought) => res.json(Thought))
-      .catch((err) => {
+      .then((Thought) => {
+       return User.findOneAndUpdate(
+            { _id: req.body.userId },
+            { $addToSet: { thoughts: Thought._id } },
+            { new: true }
+          );
+        })
+        .then((userData) =>
+        !userData
+        ? res.status(404).json({ message: 'No Thought with that ID' })
+        : res.json(userData)
+        )      .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
       });
@@ -80,7 +90,7 @@ addReaction(req, res) {
 removeReaction(req, res) {
   Thought.findOneAndUpdate(
     { _id: req.params.thoughtId },
-    { $pull: { reactions: { reactionId: req.params.reactionId } } },
+    { $pull: { reactions: req.body} },
     { runValidators: true, new: true }
   )
     .then((Thought) =>

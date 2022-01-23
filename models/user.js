@@ -4,7 +4,7 @@ const thoughtSchema = require('./Thought');
 // Schema to create User model
 const userSchema = new Schema(
   {
-    uesername: {
+    username: {
       type: String,
       required: true,
       unique: true,

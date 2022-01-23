@@ -4,12 +4,12 @@ module.exports = {
   // Get all Users
   getUsers(req, res) {
     User.find({})
-    .populate({
+    /*.populate({
       path:"thoughts",
       select:"-__v",
     })
       .select('-__v')
-      .sort({ _id: -1 })
+      .sort({ _id: -1 })*/
       .then((UserObj) => res.json(UserObj))
       .catch((err) => {
         console.log(err);
@@ -19,11 +19,11 @@ module.exports = {
   // Get a single User
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.userId })
-    .populate({
+   /* .populate({
       path:"thoughts",
       select:"-__v",
     })
-      .select('-__v')
+      .select('-__v')*/
       .then((User) =>
         !User
           ? res.status(404).json({ message: 'No User with that ID' })
@@ -73,11 +73,11 @@ module.exports = {
 
   // Add an Friend to a User
   addFriend(req, res) {
-    console.log('You are adding an Friend');
+    console.log('You are adding a Friend');
     console.log(req.body);
     User.findOneAndUpdate(
-      { _id: req.params.UserId },
-      { $addToSet: { friends: req.body } },
+      { _id: req.params.userId },
+      { $addToSet: { friends: req.params.friendId } },
       {new: true }
     )
       .then((User) =>
@@ -92,8 +92,8 @@ module.exports = {
   // Remove Friend from a User
   removeFriend(req, res) {
     User.findOneAndUpdate(
-      { _id: req.params.UserId },
-      { $pull: { friend: { friendId: req.params.friendId } } },
+      { _id: req.params.userId },
+      { $pull: { friends: req.params.friendId  } },
       {new: true }
     )
       .then((User) =>
