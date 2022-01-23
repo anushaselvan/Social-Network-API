@@ -4,19 +4,12 @@ module.exports = {
   // Get all Thoughts
   getThoughts(req, res) {
     Thought.find({})
-    /*.populate({
-      path: "reactions",
-      select: "-__v",
-      model: Reaction,
-  })
-  .select("-__v")*/
       .then((ThoughtData) => res.json(ThoughtData))
       .catch((err) => res.status(500).json(err));
   },
   // Get a Thought
   getSingleThought(req, res) {
     Thought.findOne({ _id: req.params.thoughtId })
-    //  .select('-__v')
       .then((ThoughtData) =>
         !ThoughtData
           ? res.status(404).json({ message: 'No Thought with that ID' })
@@ -70,7 +63,7 @@ module.exports = {
   },
 // Add a Reaction to a Thought
 addReaction(req, res) {
-  console.log('You are adding an Friend');
+  console.log('You are adding a reaction');
   console.log(req.body);
   Thought.findOneAndUpdate(
     { _id: req.params.thoughtId },
